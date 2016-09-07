@@ -6,30 +6,28 @@ import com.amazonaws.services.simpleworkflow.flow.core.Promises;
 import konradczajka.aws.swfpoc.activities.VideoActivitiesClient;
 import konradczajka.aws.swfpoc.activities.VideoActivitiesClientImpl;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class VideoWorkflowImpl implements VideoWorkflow {
+public class BasicWorkflowImpl implements BasicWorkflow {
 
     private VideoActivitiesClient operations = new VideoActivitiesClientImpl();
 
     @Override
-    public void processAsset(URL source, Set<String> profiles) {
-        List<Promise<URL>> encodedFiles = new ArrayList<>();
+    public void processAsset(String source, Set<String> profiles) {
+        List<Promise<String>> encodings = new ArrayList<>();
         for (String profile : profiles) {
-            encodedFiles.add(operations.encode(source, profile));
+            encodings.add(operations.encode(source, profile));
         }
-
-        Promise<List<URL>> packagedFiles = operations.packageWithMpegDash(Promises.listOfPromisesToPromise(encodedFiles));
-
+        Promise<List<String>> packagedFiles = operations.packageWithMpegDash(Promises.listOfPromisesToPromise(encodings));
         displayResult(packagedFiles);
+
     }
 
     @Asynchronous
-    protected void displayResult(Promise<List<URL>> packagedFiles) {
-        System.out.println("Packaged files:");
+    protected void displayResult(Promise<List<String>> packagedFiles) {
+        System.out.println("Package contents:");
         packagedFiles.get().forEach(System.out::println);
     }
 }

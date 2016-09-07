@@ -10,16 +10,15 @@ import konradczajka.aws.swfpoc.workflow.VideoWorkflowClientExternalFactory;
 import konradczajka.aws.swfpoc.workflow.VideoWorkflowClientExternalFactoryImpl;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class VideoMain {
+public class BasicStart {
     public static void main(String[] args) throws MalformedURLException {
         ClientConfiguration config = new ClientConfiguration().withSocketTimeout(70*1000);
 
-        String swfAccessId = "AKIAJ4X56XZF5TC7LNIQ";
-        String swfSecretKey = "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";
+        String swfAccessId = "";
+        String swfSecretKey = "";
         AWSCredentials awsCredentials = new BasicAWSCredentials(swfAccessId, swfSecretKey);
 
         AmazonSimpleWorkflow service = new AmazonSimpleWorkflowClient(awsCredentials, config);
@@ -28,8 +27,9 @@ public class VideoMain {
         String domain = "abc";
 
         VideoWorkflowClientExternalFactory factory = new VideoWorkflowClientExternalFactoryImpl(service, domain);
-        VideoWorkflowClientExternal video = factory.getClient("someID2");
+        VideoWorkflowClientExternal video = factory.getClient("some-id");
 
-        video.processAsset(new URL("ftp://bucket-name/file.mp4"), new HashSet<>(Arrays.asList("profile-1", "profile-2", "profile-3")));
+        System.out.println("Starting packaging workflow with 'file.mp4' and '3' profiles");
+        video.processAsset("file.mp4", new HashSet<>(Arrays.asList("profile-1", "profile-2", "profile-3")));
     }
 }

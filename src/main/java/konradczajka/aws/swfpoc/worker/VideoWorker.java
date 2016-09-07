@@ -8,14 +8,14 @@ import com.amazonaws.services.simpleworkflow.AmazonSimpleWorkflowClient;
 import com.amazonaws.services.simpleworkflow.flow.ActivityWorker;
 import com.amazonaws.services.simpleworkflow.flow.WorkflowWorker;
 import konradczajka.aws.swfpoc.activities.VideoActivitiesImpl;
-import konradczajka.aws.swfpoc.workflow.VideoWorkflowImpl;
+import konradczajka.aws.swfpoc.workflow.BasicWorkflowImpl;
 
 public class VideoWorker {
     public static void main(String[] args) throws IllegalAccessException, NoSuchMethodException, InstantiationException {
         ClientConfiguration config = new ClientConfiguration().withSocketTimeout(70*1000);
 
-        String swfAccessId = "AKIAJ4X56XZF5TC7LNIQ";
-        String swfSecretKey = "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";
+        String swfAccessId = "";
+        String swfSecretKey = "";
         AWSCredentials awsCredentials = new BasicAWSCredentials(swfAccessId, swfSecretKey);
 
         AmazonSimpleWorkflow service = new AmazonSimpleWorkflowClient(awsCredentials, config);
@@ -29,13 +29,9 @@ public class VideoWorker {
         aw.start();
 
         WorkflowWorker wfw = new WorkflowWorker(service, domain, taskListToPoll);
-        wfw.addWorkflowImplementationType(VideoWorkflowImpl.class);
+        wfw.addWorkflowImplementationType(BasicWorkflowImpl.class);
         wfw.start();
 
 
-//        Access Key ID:
-//        AKIAJ4X56XZF5TC7LNIQ
-//        Secret Access Key:
-//        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
     }
 }

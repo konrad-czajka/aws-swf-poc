@@ -7,69 +7,141 @@
     <groupId>konradczajka.aws</groupId>
     <artifactId>swf-poc</artifactId>
     <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- version dependencies -->
+        <slf4j.version>1.7.5</slf4j.version>
+        <aws.java.sdk.version>1.11.22</aws.java.sdk.version>
+        <junit.version>4.10</junit.version>
+        <aspectj.version>1.8.7</aspectj.version>
+        <source.version>1.8</source.version>
+        <target.version>1.8</target.version>
+        <compliance.level.version>1.8</compliance.level.version>
+        <!-- version plugins -->
+        <processor.p.version>2.2.3</processor.p.version>
+        <compiler.p.version>2.1</compiler.p.version>
+        <aspectj.p.version>1.8</aspectj.p.version>
+    </properties>
+    <dependencies>
+        <!-- aws -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk</artifactId>
+            <version>${aws.java.sdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-swf-libraries</artifactId>
+            <version>${aws.java.sdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-swf-build-tools</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <!-- aspectj weaving -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>${aspectj.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjtools</artifactId>
+            <version>${aspectj.version}</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
+                <groupId>org.bsc.maven</groupId>
+                <artifactId>maven-processor-plugin</artifactId>
+                <version>${processor.p.version}</version>
+                <executions>
+                    <!-- Run annotation processors on src/main/java sources -->
+                    <execution>
+                        <id>process</id>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                    </execution>
+                    <!-- Run annotation processors on src/test/java sources -->
+                    <execution>
+                        <id>process-test</id>
+                        <goals>
+                            <goal>process-test</goal>
+                        </goals>
+                        <phase>generate-test-sources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>${compiler.p.version}</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <!-- Disable annotation processors during normal compilation -->
+                    <compilerArgument>-proc:none</compilerArgument>
+                    <source>${source.version}</source>
+                    <target>${target.version}</target>
                 </configuration>
             </plugin>
+            <!-- AspectJ configuration -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>aspectj-maven-plugin</artifactId>
-                <version>1.8</version>
+                <version>${aspectj.p.version}</version>
                 <configuration>
-                    <complianceLevel>1.8</complianceLevel>
+                    <complianceLevel>${compliance.level.version}</complianceLevel>
+                    <aspectLibraries>
+                        <!-- for aspect weaving and swf versions -->
+                        <aspectLibrary>
+                            <groupId>com.amazonaws</groupId>
+                            <artifactId>aws-java-sdk-swf-libraries</artifactId>
+                        </aspectLibrary>
+                        <aspectLibrary>
+                            <groupId>com.amazonaws</groupId>
+                            <artifactId>aws-swf-build-tools</artifactId>
+                        </aspectLibrary>
+                    </aspectLibraries>
                     <showWeaveInfo>true</showWeaveInfo>
                     <verbose>true</verbose>
                     <sources>
                         <source>
                             <basedir>src/main/java</basedir>
                             <includes>
-                                <include>*/**/*Workflow*.java</include>
-                                <include>*/**/*Activities*.java</include>
+                                <include>**/*WorkflowImpl.java</include>
+                                <include>**/*ActivitiesImpl.java</include>
                             </includes>
                         </source>
                     </sources>
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>process-sources</phase>
                         <goals>
                             <goal>compile</goal>
+                            <goal>test-compile</goal>
                         </goals>
                     </execution>
                 </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.aspectj</groupId>
-                        <artifactId>aspectjtools</artifactId>
-                        <version>1.8.7</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-swf-build-tools</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjrt</artifactId>
-            <version>1.8.7</version>
-        </dependency>
-    </dependencies>
 </project>

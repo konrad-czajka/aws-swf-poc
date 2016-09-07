@@ -9,8 +9,8 @@ import java.util.Set;
 
 @Workflow
 @WorkflowRegistrationOptions(defaultExecutionStartToCloseTimeoutSeconds = 3600)
-public interface VideoWorkflow {
-    @Execute(version = "5.0")
-    void processAsset(URL source, Set<String> profiles);
+public interface BasicWorkflow {
+    @Execute(version = "6.0")
+    void processAsset(String source, Set<String> profiles);
 }
 
